@@ -1,15 +1,18 @@
-// bot.js – auto-roasts + “@Bot roast @user” with 5-min user cooldown
+// bot.js – roasts via Hugging Face Llama-3, auto + on-demand, logs fetch errors
 const { Client, GatewayIntentBits } = require("discord.js");
-const fetch = global.fetch || ((...a) => import("node-fetch").then(({ default: f }) => f(...a)));
+const fetch = (...a) => import("node-fetch").then(({ default: f }) => f(...a));
 require("dotenv").config();
 
-const TOKEN = process.env.DISCORD_TOKEN;
-const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
-const GUILD_ID = process.env.DISCORD_GUILD_ID;
+const {
+  DISCORD_TOKEN: TOKEN,
+  DISCORD_CHANNEL_ID: CHANNEL_ID,
+  DISCORD_GUILD_ID: GUILD_ID,
+  HF_TOKEN,
+} = process.env;
 
-if (!TOKEN || !CHANNEL_ID || !GUILD_ID) {
+if (!TOKEN || !CHANNEL_ID || !GUILD_ID || !HF_TOKEN) {
   console.error(
-    "DISCORD_TOKEN, DISCORD_CHANNEL_ID and DISCORD_GUILD_ID must be set"
+    "Set DISCORD_TOKEN, DISCORD_CHANNEL_ID, DISCORD_GUILD_ID, HF_TOKEN"
   );
   process.exit(1);
 }
@@ -22,31 +25,50 @@ const client = new Client({
   ],
 });
 
-const fallbackRoasts = [
-  "You bring everyone so much joy… when you leave the room.",
-  "Some drink from the fountain of knowledge; you just gargle.",
-  "I’d agree with you, but then we’d both be wrong.",
+// ---------- Hugging Face generation -----------------------------------
+const MODEL = "meta-llama/Meta-Llama-3-8B-Instruct";
+const fallback = [
+  "Bless your heart… it needs all the help it can get.",
+  "Your brain is on vacation and your mouth is working overtime.",
+  "If laziness were an Olympic sport, you’d get bronze—because you’d never get up for gold.",
 ];
 
-async function getRoast() {
+async function getRoast(name = "friend") {
+  const prompt = `Give me one short, savage but playful roast for a Discord user named "${name}".`;
   try {
     const r = await fetch(
-      "https://evilinsult.com/generate_insult.php?lang=en&type=text"
+      `https://api-inference.huggingface.co/models/${MODEL}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${HF_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: { max_new_tokens: 32, temperature: 0.9 },
+        }),
+      }
     );
-    if (!r.ok) throw 0;
-    return (await r.text()).trim();
-  } catch {
-    return fallbackRoasts[Math.floor(Math.random() * fallbackRoasts.length)];
+    if (!r.ok) throw new Error(`HF ${r.status} ${r.statusText}`);
+    const j = await r.json();
+    const text = j[0]?.generated_text?.replace(prompt, "").trim();
+    if (text) return text;
+    throw new Error("empty response");
+  } catch (err) {
+    console.error("[HF] Roast fetch failed:", err.message);
+    return fallback[Math.floor(Math.random() * fallback.length)];
   }
 }
 
-const lastSeen = new Map(); // userId → timestamp
-const cooldown = new Map(); // userId → timestamp
-const ACTIVE_MS = 15 * 60 * 1000; // 15 minutes
-const COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
+// ---------- activity & cooldown --------------------------------------
+const lastSeen = new Map(); // userId → last message time
+const cooldown = new Map(); // userId → last manual roast
+const ACTIVE_MS = 15 * 60 * 1000; // 15 min window
+const COOLDOWN_MS = 5 * 60 * 1000; // 5 min per-user
 const now = () => Date.now();
 
-// track activity + handle manual roast command
+// message handler
 client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return;
   lastSeen.set(msg.author.id, now());
@@ -64,22 +86,26 @@ client.on("messageCreate", async (msg) => {
     return;
   }
 
-  msg.channel.send(`<@${target.id}> ${await getRoast()}`).catch(console.error);
+  const roast = await getRoast(target.username);
+  msg.channel.send(`<@${target.id}> ${roast}`).catch(console.error);
   cooldown.set(target.id, now());
 });
 
-// automatic roast every 10 min, but only to humans active in last 15 min
+// automatic roast
 async function roastRandomActive(guild, channel) {
   const cutoff = now() - ACTIVE_MS;
   const members = await guild.members.fetch();
-  const candidates = members.filter(
+  const humans = members.filter(
     (m) => !m.user.bot && (lastSeen.get(m.id) || 0) >= cutoff
   );
-  if (!candidates.size) return;
-  const victim = candidates.random();
-  channel.send(`<@${victim.id}> ${await getRoast()}`).catch(console.error);
+  if (!humans.size) return;
+
+  const victim = humans.random();
+  const roast = await getRoast(victim.displayName || victim.user.username);
+  channel.send(`<@${victim.id}> ${roast}`).catch(console.error);
 }
 
+// startup
 client.once("ready", async () => {
   console.log(`Logged in as ${client.user.tag}`);
   const guild = await client.guilds.fetch(GUILD_ID);
