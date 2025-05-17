@@ -8,6 +8,11 @@ This bot posts a random joke to a specific channel every 5 minutes.
    ```bash
    npm install
    ```
+   This bot uses the `fetch` API built into Node 18+. If you are on an
+   earlier Node version, install `node-fetch`:
+   ```bash
+   npm install node-fetch
+   ```
 2. Copy `.env.example` to `.env` and fill in your Discord token and channel ID:
    ```bash
    cp .env.example .env

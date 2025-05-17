@@ -1,6 +1,6 @@
 // bot.js – auto-roasts + “@Bot roast @user” with 5-min user cooldown
 const { Client, GatewayIntentBits } = require("discord.js");
-const fetch = (...a) => import("node-fetch").then(({ default: f }) => f(...a));
+const fetch = global.fetch || ((...a) => import("node-fetch").then(({ default: f }) => f(...a)));
 require("dotenv").config();
 
 const TOKEN = process.env.DISCORD_TOKEN;
