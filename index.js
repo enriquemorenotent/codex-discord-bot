@@ -29,11 +29,8 @@ const client = new Client({
 
 // ---------- Hugging Face generation -----------------------------------
 const MODEL = "meta-llama/Meta-Llama-3-8B-Instruct";
-const fallback = [
-  "Bless your heart… it needs all the help it can get.",
-  "Your brain is on vacation and your mouth is working overtime.",
-  "If laziness were an Olympic sport, you’d get bronze—because you’d never get up for gold.",
-];
+const failMessage =
+  "Sorry, but I seem to be having trouble accessing my AI brain. Ask the mods for help (not @ggoollpp, he will annoy you)";
 
 async function getRoast(name = "friend") {
   const prompt = `Give me one short, savage but playful roast for a Discord user named "${name}".`;
@@ -59,7 +56,7 @@ async function getRoast(name = "friend") {
     throw new Error("empty response");
   } catch (err) {
     console.error("[HF] Roast fetch failed:", err.message);
-    return fallback[Math.floor(Math.random() * fallback.length)];
+    return failMessage;
   }
 }
 
