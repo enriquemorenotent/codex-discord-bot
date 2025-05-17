@@ -1,6 +1,8 @@
 // bot.js – roasts via Hugging Face Llama-3, auto + on-demand, logs fetch errors
 const { Client, GatewayIntentBits } = require("discord.js");
-const fetch = (...a) => import("node-fetch").then(({ default: f }) => f(...a));
+// Use built-in fetch on Node 18+, fall back to node-fetch for older versions
+const fetch =
+  global.fetch || ((...a) => import("node-fetch").then(({ default: f }) => f(...a)));
 require("dotenv").config();
 
 const {
