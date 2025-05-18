@@ -1,8 +1,9 @@
 // Simple question answering bot using Hugging Face
 const { Client, GatewayIntentBits } = require("discord.js");
+// Load environment variables before importing other modules
+require("dotenv").config();
 // Fetch answers from Hugging Face
 const getAnswer = require("./answer");
-require("dotenv").config();
 
 const {
   DISCORD_TOKEN: TOKEN,
@@ -10,6 +11,12 @@ const {
   DISCORD_GUILD_ID: GUILD_ID,
   HF_TOKEN,
 } = process.env;
+
+console.log("Environment variables:");
+console.log("DISCORD_TOKEN:", TOKEN);
+console.log("DISCORD_CHANNEL_ID:", CHANNEL_ID);
+console.log("DISCORD_GUILD_ID:", GUILD_ID);
+console.log("HF_TOKEN:", HF_TOKEN);
 
 if (!TOKEN || !CHANNEL_ID || !GUILD_ID || !HF_TOKEN) {
   console.error(
