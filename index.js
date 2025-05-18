@@ -11,6 +11,12 @@ const {
   HF_TOKEN,
 } = process.env;
 
+console.log("Environment variables:");
+console.log("DISCORD_TOKEN:", TOKEN);
+console.log("DISCORD_CHANNEL_ID:", CHANNEL_ID);
+console.log("DISCORD_GUILD_ID:", GUILD_ID);
+console.log("HF_TOKEN:", HF_TOKEN);
+
 if (!TOKEN || !CHANNEL_ID || !GUILD_ID || !HF_TOKEN) {
   console.error(
     "Set DISCORD_TOKEN, DISCORD_CHANNEL_ID, DISCORD_GUILD_ID, HF_TOKEN"
