@@ -4,6 +4,7 @@ const { Client, GatewayIntentBits } = require("discord.js");
 require("dotenv").config();
 // Fetch answers from Hugging Face
 const getAnswer = require("./answer");
+const { addPrediction, getPredictions } = require("./db");
 
 const {
   DISCORD_TOKEN: TOKEN,
@@ -38,13 +39,36 @@ client.on("messageCreate", async (msg) => {
   if (!msg.guild || msg.guild.id !== GUILD_ID) return;
   if (msg.channel.id !== CHANNEL_ID) return;
   if (!msg.mentions.has(client.user)) return;
-  const question = msg.content.replace(/<@!?\d+>/g, "").trim();
-  if (!question) return;
-  const answer = await getAnswer(question);
+  const text = msg.content.replace(/<@!?\d+>/g, "").trim();
+  if (!text) return;
+
+  const match = /agi will arrive on (.+)/i.exec(text);
+  if (match) {
+    const when = match[1].trim();
+    addPrediction(msg.author.id, when);
+    const mention = `<@${msg.author.id}>`;
+    msg.channel
+      .send(`${mention} Prediction saved for ${when}`)
+      .catch(console.error);
+    return;
+  }
+
+  if (/^list agi predictions$/i.test(text)) {
+    const predictions = getPredictions();
+    if (predictions.length === 0) {
+      msg.channel.send("No AGI predictions saved.").catch(console.error);
+    } else {
+      const lines = predictions
+        .map((p) => `<@${p.userId}> predicted ${p.date}`)
+        .join("\n");
+      msg.channel.send(lines).catch(console.error);
+    }
+    return;
+  }
+
+  const answer = await getAnswer(text);
   const mention = `<@${msg.author.id}>`;
-  msg.channel
-    .send(`${mention} ${answer}`)
-    .catch(console.error);
+  msg.channel.send(`${mention} ${answer}`).catch(console.error);
 });
 
 // startup

@@ -5,7 +5,7 @@ with a question and it will reply with an answer.
 
 ## Setup
 
-1. Install dependencies:
+1. Install dependencies (this also installs the SQLite library):
    ```bash
    npm install
    ```
@@ -40,3 +40,21 @@ npm run hf-test "What is the capital of France?"
 ```
 
 This sends a real request to the configured model and prints the answer.
+
+### AGI arrival predictions
+
+Users can record their guesses about when AGI will be achieved by
+posting a message that matches:
+
+```
+AGI will arrive on <date>
+```
+
+The bot stores these predictions in a local SQLite database. It attempts to
+parse the date and keeps both the original text and a parsed date if one can be
+determined. To see all
+stored predictions, mention the bot with:
+
+```
+list agi predictions
+```
