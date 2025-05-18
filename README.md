@@ -70,3 +70,10 @@ stored predictions, mention the bot with:
 ```
 list agi predictions
 ```
+
+To update or delete an existing prediction, use:
+
+```
+update prediction <id> to <date>
+delete prediction <id>
+```

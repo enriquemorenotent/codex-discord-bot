@@ -1,6 +1,11 @@
 import dotenv from 'dotenv';
 import getAnswer from './answer.js';
-import { addPrediction, getPredictions } from './db.js';
+import {
+  addPrediction,
+  getPredictions,
+  updatePrediction,
+  deletePrediction,
+} from './db.js';
 dotenv.config();
 
 const text = process.argv.slice(2).join(' ').trim();
@@ -17,6 +22,23 @@ async function main() {
     const when = match[1].trim();
     addPrediction(USER_ID, when);
     console.log(`<@${USER_ID}> Prediction saved for ${when}`);
+    return;
+  }
+
+  const updateMatch = /^update prediction (\d+) to (.+)/i.exec(text);
+  if (updateMatch) {
+    const id = parseInt(updateMatch[1], 10);
+    const when = updateMatch[2].trim();
+    updatePrediction(id, when);
+    console.log(`<@${USER_ID}> Prediction ${id} updated to ${when}`);
+    return;
+  }
+
+  const deleteMatch = /^delete prediction (\d+)/i.exec(text);
+  if (deleteMatch) {
+    const id = parseInt(deleteMatch[1], 10);
+    deletePrediction(id);
+    console.log(`<@${USER_ID}> Prediction ${id} deleted`);
     return;
   }
 
