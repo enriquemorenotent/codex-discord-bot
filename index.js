@@ -5,7 +5,12 @@ import dotenv from "dotenv";
 dotenv.config();
 // Fetch answers from Hugging Face
 import getAnswer from "./answer.js";
-import { addPrediction, getPredictions } from "./db.js";
+import {
+  addPrediction,
+  getPredictions,
+  updatePrediction,
+  deletePrediction,
+} from "./db.js";
 
 const {
   DISCORD_TOKEN: TOKEN,
@@ -52,6 +57,29 @@ client.on("messageCreate", async (msg) => {
     const mention = `<@${msg.author.id}>`;
     msg.channel
       .send(`${mention} Prediction saved for ${when}`)
+      .catch(console.error);
+    return;
+  }
+
+  const updateMatch = /^update prediction (\d+) to (.+)/i.exec(text);
+  if (updateMatch) {
+    const id = parseInt(updateMatch[1], 10);
+    const when = updateMatch[2].trim();
+    updatePrediction(id, when);
+    const mention = `<@${msg.author.id}>`;
+    msg.channel
+      .send(`${mention} Prediction ${id} updated to ${when}`)
+      .catch(console.error);
+    return;
+  }
+
+  const deleteMatch = /^delete prediction (\d+)/i.exec(text);
+  if (deleteMatch) {
+    const id = parseInt(deleteMatch[1], 10);
+    deletePrediction(id);
+    const mention = `<@${msg.author.id}>`;
+    msg.channel
+      .send(`${mention} Prediction ${id} deleted`)
       .catch(console.error);
     return;
   }
