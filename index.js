@@ -1,8 +1,9 @@
 // Simple question answering bot using Hugging Face
 const { Client, GatewayIntentBits } = require("discord.js");
+// Load environment variables before importing other modules
+require("dotenv").config();
 // Fetch answers from Hugging Face
 const getAnswer = require("./answer");
-require("dotenv").config();
 
 const {
   DISCORD_TOKEN: TOKEN,
