@@ -1,6 +1,9 @@
-const fetch =
-  global.fetch ||
-  ((...a) => import("node-fetch").then(({ default: f }) => f(...a)));
+function getFetch() {
+  return (
+    global.fetch ||
+    ((...a) => import("node-fetch").then(({ default: f }) => f(...a)))
+  );
+}
 
 const { HF_TOKEN } = process.env;
 
@@ -23,6 +26,7 @@ async function getAnswer(question = "What's up?") {
     },
     body: JSON.stringify(bodyData),
   };
+  const fetch = getFetch();
   try {
     const r = await fetch(url, opts);
     const respText = await r.text();
