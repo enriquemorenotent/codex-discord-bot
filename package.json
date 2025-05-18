@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "hf-test": "node test-fetch.js"
+    "hf-test": "node test-fetch.js",
+    "mention": "node mention.js"
   },
   "dependencies": {
     "discord.js": "^14.11.0",
