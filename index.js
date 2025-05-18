@@ -28,6 +28,8 @@ const client = new Client({
 // message handler
 client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return;
+  if (!msg.guild || msg.guild.id !== GUILD_ID) return;
+  if (msg.channel.id !== CHANNEL_ID) return;
   if (!msg.mentions.has(client.user)) return;
   const question = msg.content.replace(/<@!?\d+>/g, "").trim();
   if (!question) return;

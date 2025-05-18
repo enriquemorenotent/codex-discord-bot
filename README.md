@@ -28,6 +28,9 @@ with a question and it will reply with an answer.
 
 Ensure the bot has permission to send messages in the specified channel.
 
+The bot only responds to messages in the guild and channel IDs provided in
+`.env`.
+
 ### Testing the Hugging Face request
 
 To test your Hugging Face configuration without running Discord, use:
