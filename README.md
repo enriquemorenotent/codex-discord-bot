@@ -38,8 +38,20 @@ To test your Hugging Face configuration without running Discord, use:
 ```bash
 npm run hf-test "What is the capital of France?"
 ```
-
 This sends a real request to the configured model and prints the answer.
+
+### Simulating a mention locally
+
+You can test how the bot responds to a mention without running Discord by
+using the `mention` script. Pass the message you want to send after the bot's
+name:
+
+```bash
+npm run mention "Agi will arrive on 1st November 2012"
+```
+
+This prints the same response that would be sent in Discord when the bot is
+mentioned with that text.
 
 ### AGI arrival predictions
 
