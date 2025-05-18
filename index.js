@@ -11,6 +11,12 @@ const {
   HF_TOKEN,
 } = process.env;
 
+console.log("Environment variables:");
+console.log("DISCORD_TOKEN:", TOKEN);
+console.log("DISCORD_CHANNEL_ID:", CHANNEL_ID);
+console.log("DISCORD_GUILD_ID:", GUILD_ID);
+console.log("HF_TOKEN:", HF_TOKEN);
+
 if (!TOKEN || !CHANNEL_ID || !GUILD_ID || !HF_TOKEN) {
   console.error(
     "Set DISCORD_TOKEN, DISCORD_CHANNEL_ID, DISCORD_GUILD_ID, HF_TOKEN"
@@ -34,7 +40,10 @@ client.on("messageCreate", async (msg) => {
   const question = msg.content.replace(/<@!?\d+>/g, "").trim();
   if (!question) return;
   const answer = await getAnswer(question);
-  msg.reply(answer).catch(console.error);
+  const mention = `<@${msg.author.id}>`;
+  msg.channel
+    .send(`${mention} ${answer}`)
+    .catch(console.error);
 });
 
 // startup
