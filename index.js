@@ -1,7 +1,7 @@
-// Roast bot using Hugging Face, auto + on-demand, logs fetch errors
+// Simple question answering bot using Hugging Face
 const { Client, GatewayIntentBits } = require("discord.js");
-// Fetch roast replies from Hugging Face
-const getRoast = require("./roast");
+// Fetch answers from Hugging Face
+const getAnswer = require("./answer");
 require("dotenv").config();
 
 const {
@@ -19,66 +19,25 @@ if (!TOKEN || !CHANNEL_ID || !GUILD_ID || !HF_TOKEN) {
 }
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMembers,
-  ],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 
 // ---------- Hugging Face generation -----------------------------------
-// getRoast is provided by ./roast
-
-// ---------- activity & cooldown --------------------------------------
-const lastSeen = new Map(); // userId → last message time
-const cooldown = new Map(); // userId → last manual roast
-const ACTIVE_MS = 15 * 60 * 1000; // 15 min window
-const COOLDOWN_MS = 5 * 60 * 1000; // 5 min per-user
-const now = () => Date.now();
+// getAnswer is provided by ./answer
 
 // message handler
 client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return;
-  lastSeen.set(msg.author.id, now());
-
   if (!msg.mentions.has(client.user)) return;
-  const target = msg.mentions.users
-    .filter((u) => u.id !== client.user.id)
-    .first();
-  if (!target) return;
-
-  if (now() - (cooldown.get(target.id) || 0) < COOLDOWN_MS) {
-    msg.reply(
-      "Dude, he just got roasted... give him a second to dry his tears first!"
-    );
-    return;
-  }
-
-  const roast = await getRoast(target.username);
-  msg.channel.send(`<@${target.id}> ${roast}`).catch(console.error);
-  cooldown.set(target.id, now());
+  const question = msg.content.replace(/<@!?\d+>/g, "").trim();
+  if (!question) return;
+  const answer = await getAnswer(question);
+  msg.reply(answer).catch(console.error);
 });
-
-// automatic roast
-async function roastRandomActive(guild, channel) {
-  const cutoff = now() - ACTIVE_MS;
-  const members = await guild.members.fetch();
-  const humans = members.filter(
-    (m) => !m.user.bot && (lastSeen.get(m.id) || 0) >= cutoff
-  );
-  if (!humans.size) return;
-
-  const victim = humans.random();
-  const roast = await getRoast(victim.displayName || victim.user.username);
-  channel.send(`<@${victim.id}> ${roast}`).catch(console.error);
-}
 
 // startup
 client.once("ready", async () => {
   console.log(`Logged in as ${client.user.tag}`);
-  const guild = await client.guilds.fetch(GUILD_ID);
-  const channel = await client.channels.fetch(CHANNEL_ID);
-  setInterval(() => roastRandomActive(guild, channel), 10 * 60 * 1000);
 });
 
 client.login(TOKEN);

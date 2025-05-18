@@ -1,7 +1,7 @@
-# Roast Discord Bot
+# Question Answering Discord Bot
 
-This bot roasts users in your server using a Hugging Face language model. It can
-reply when mentioned and will occasionally roast recently active users.
+This bot answers questions using a Hugging Face language model. Mention the bot
+with a question and it will reply with an answer.
 
 ## Setup
 
@@ -33,7 +33,7 @@ Ensure the bot has permission to send messages in the specified channel.
 To test your Hugging Face configuration without running Discord, use:
 
 ```bash
-npm run hf-test "SomeUser"
+npm run hf-test "What is the capital of France?"
 ```
 
-This sends a real request to the configured model and prints the generated roast.
+This sends a real request to the configured model and prints the answer.
