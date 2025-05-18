@@ -63,4 +63,4 @@ async function getAnswer(question = "What's up?") {
   }
 }
 
-module.exports = getAnswer;
+export default getAnswer;

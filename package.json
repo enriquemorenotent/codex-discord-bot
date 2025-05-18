@@ -4,7 +4,7 @@
   "description": "Discord bot that answers questions using a Hugging Face language model.",
   "license": "ISC",
   "author": "Enrique Moreno Tent",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"No tests specified\"",
