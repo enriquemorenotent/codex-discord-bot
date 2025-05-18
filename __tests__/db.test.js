@@ -48,7 +48,7 @@ let addPrediction, getPredictions, updatePrediction, deletePrediction;
 
 beforeEach(async () => {
   jest.resetModules();
-  const mod = await import('../db.js');
+  const mod = await import('../src/db.js');
   addPrediction = mod.addPrediction;
   getPredictions = mod.getPredictions;
   updatePrediction = mod.updatePrediction;

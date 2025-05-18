@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import getAnswer from '../answer.js';
+import getAnswer from '../src/answer.js';
 
 describe('getAnswer', () => {
   const failMessage =
