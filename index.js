@@ -2,6 +2,7 @@
 const { Client, GatewayIntentBits } = require("discord.js");
 // Fetch answers from Hugging Face
 const getAnswer = require("./answer");
+const handleMessage = require("./messageHandler");
 require("dotenv").config();
 
 const {
@@ -26,14 +27,7 @@ const client = new Client({
 // getAnswer is provided by ./answer
 
 // message handler
-client.on("messageCreate", async (msg) => {
-  if (msg.author.bot) return;
-  if (!msg.mentions.has(client.user)) return;
-  const question = msg.content.replace(/<@!?\d+>/g, "").trim();
-  if (!question) return;
-  const answer = await getAnswer(question);
-  msg.reply(answer).catch(console.error);
-});
+client.on("messageCreate", (msg) => handleMessage(client, msg));
 
 // startup
 client.once("ready", async () => {
