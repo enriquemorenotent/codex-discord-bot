@@ -41,7 +41,10 @@ client.on("messageCreate", async (msg) => {
   const question = msg.content.replace(/<@!?\d+>/g, "").trim();
   if (!question) return;
   const answer = await getAnswer(question);
-  msg.reply(answer).catch(console.error);
+  const mention = `<@${msg.author.id}>`;
+  msg.channel
+    .send(`${mention} ${answer}`)
+    .catch(console.error);
 });
 
 // startup
