@@ -1,7 +1,8 @@
 # Question Answering Discord Bot
 
 This bot answers questions using a Hugging Face language model. Mention the bot
-with a question and it will reply with an answer.
+with a question and it will reply with an answer. All source code lives in the
+`src` directory.
 
 ## Setup
 
