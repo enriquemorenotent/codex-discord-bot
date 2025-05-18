@@ -8,8 +8,8 @@ const MODEL = "HuggingFaceH4/zephyr-7b-beta"; // public, no gating
 const failMessage =
   "Sorry, but I seem to be having trouble accessing my AI brain. Ask the mods for help (not @ggoollpp, he will annoy you)";
 
-async function getRoast(name = "friend") {
-  const prompt = `Give me one short, savage but playful roast for a Discord user named "${name}".`;
+async function getAnswer(question = "What's up?") {
+  const prompt = `Answer the following question clearly and concisely.\nQuestion: ${question}\nAnswer:`;
   const url = `https://api-inference.huggingface.co/models/${MODEL}`;
   const bodyData = {
     inputs: prompt,
@@ -55,7 +55,7 @@ async function getRoast(name = "friend") {
     });
     return failMessage;
   } catch (err) {
-    console.error("[HF] Roast fetch error", {
+    console.error("[HF] Answer fetch error", {
       request: { url, method: "POST", body: bodyData },
       error: err.message,
     });
@@ -63,4 +63,4 @@ async function getRoast(name = "friend") {
   }
 }
 
-module.exports = getRoast;
+module.exports = getAnswer;

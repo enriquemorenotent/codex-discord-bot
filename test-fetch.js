@@ -1,13 +1,13 @@
 require('dotenv').config();
-const getRoast = require('./roast');
+const getAnswer = require('./answer');
 
-const name = process.argv[2] || 'friend';
+const question = process.argv.slice(2).join(' ') || "What's up?";
 
-getRoast(name)
+getAnswer(question)
   .then((r) => {
     console.log(r);
   })
   .catch((err) => {
-    console.error('Error getting roast:', err);
+    console.error('Error getting answer:', err);
     process.exit(1);
   });
