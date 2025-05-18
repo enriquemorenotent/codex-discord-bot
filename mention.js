@@ -1,6 +1,7 @@
-require('dotenv').config();
-const getAnswer = require('./answer');
-const { addPrediction, getPredictions } = require('./db');
+import dotenv from 'dotenv';
+import getAnswer from './answer.js';
+import { addPrediction, getPredictions } from './db.js';
+dotenv.config();
 
 const text = process.argv.slice(2).join(' ').trim();
 if (!text) {

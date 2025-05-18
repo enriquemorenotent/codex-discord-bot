@@ -1,4 +1,4 @@
-const Database = require('better-sqlite3');
+import Database from 'better-sqlite3';
 
 const db = new Database('data.db');
 
@@ -24,5 +24,5 @@ function getPredictions() {
     .map((r) => ({ userId: r.userId, date: r.date_text }));
 }
 
-module.exports = { addPrediction, getPredictions };
+export { addPrediction, getPredictions };
 

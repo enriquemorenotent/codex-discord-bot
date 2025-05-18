@@ -1,5 +1,6 @@
-require('dotenv').config();
-const getAnswer = require('./answer');
+import dotenv from 'dotenv';
+import getAnswer from './answer.js';
+dotenv.config();
 
 const question = process.argv.slice(2).join(' ') || "What's up?";
 

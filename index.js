@@ -1,10 +1,11 @@
 // Simple question answering bot using Hugging Face
-const { Client, GatewayIntentBits } = require("discord.js");
+import { Client, GatewayIntentBits } from "discord.js";
+import dotenv from "dotenv";
 // Load environment variables before importing other modules
-require("dotenv").config();
+dotenv.config();
 // Fetch answers from Hugging Face
-const getAnswer = require("./answer");
-const { addPrediction, getPredictions } = require("./db");
+import getAnswer from "./answer.js";
+import { addPrediction, getPredictions } from "./db.js";
 
 const {
   DISCORD_TOKEN: TOKEN,
